@@ -1,0 +1,26 @@
+# Node
+node_modules/
+dist/
+.temp/
+.cache/
+*.log
+npm-debug.log*
+
+# Vite / build artifacts
+.vite/
+
+# Env files
+.env
+.env.*   # optional: ignore all .env variations like .env.local, .env.preview
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Netlify
+.netlify/
+
+# Optional OS cruft
+Thumbs.db

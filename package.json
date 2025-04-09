@@ -1,0 +1,19 @@
+{
+  "name": "kontent-item-validator",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0",
+    "vite-plugin-mkcert": "^1.17.8"
+  },
+  "dependencies": {
+    "@kontent-ai/delivery-sdk": "^16.0.0",
+    "@kontent-ai/management-sdk": "^7.7.1"
+  }
+}

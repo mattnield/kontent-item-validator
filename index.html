@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Kontent Validator</title>
+  <script src="https://app.kontent.ai/js-api/custom-element/v1/custom-element.min.js"></script>
+</head>
+
+<body>
+  <h3>Translation Validation</h3>
+  <div id="validation-output">Checking...</div>
+  <button id="move-btn" style="display:none;">✅ Send to Translation</button>
+
+  <script type="module">
+    import { validateLanguageVariant, moveToWorkflowStep } from './src/validate.js';
+
+    const TARGET_WORKFLOW_STEP_ID = '00000000-0000-0000-0000-000000000000'; // Replace this
+
+    function initCustomElement() {
+      try {
+        CustomElement.init(async (element, _context) => {
+          const output = document.getElementById('validation-output');
+          const button = document.getElementById('move-btn');
+
+          const result = await validateLanguageVariant(_context.item.codename, _context.variant.codename);
+
+          if (result.isValid) {
+            output.innerHTML = `<p style="color:green;">✅ All validation passed.</p>`;
+            button.style.display = 'inline-block';
+
+            button.addEventListener('click', async () => {
+              output.innerHTML = 'Moving item to translation step...';
+              try {
+                await moveToWorkflowStep(item.system.id, language.id, TARGET_WORKFLOW_STEP_ID);
+                output.innerHTML = `<p style="color:blue;">🎉 Item moved to translation step.</p>`;
+                button.style.display = 'none';
+              } catch (err) {
+                output.innerHTML = `<p style="color:red;">❌ Failed: ${err.message}</p>`;
+              }
+            });
+          } else {
+            output.innerHTML = result.errors.map(err => `<p style="color:red;">❌ ${err}</p>`).join('');
+          }
+        });
+      } catch (err) {
+        // Sends message to console and editor if initialization failed (for example, the page is 
+        // displayed outside the Kontent UI)
+        console.error(err);
+      }
+    }
+
+    initCustomElement();
+  </script>
+</body>
+
+</html>
