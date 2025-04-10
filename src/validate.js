@@ -181,7 +181,7 @@ async function getTypeElements(contentType) {
  * @param {Array<string>} allowedTypeIds - List of allowed type GUIDs (not flat, the had an `id` prop).
  * @returns {Array<string>} - Codenames of invalid linked items.
  */
-function findInvalidLinkedItems(linkedItemCodenames, linkedItems, allowedTypeIds) {
+function findInvalidLinkedItemTypes(linkedItemCodenames, linkedItems, allowedTypeIds) {
   const invalid = [];
 
   // Convert allowed IDs to a Set for fast lookup
@@ -201,8 +201,8 @@ function findInvalidLinkedItems(linkedItemCodenames, linkedItems, allowedTypeIds
     const item = linkedItemMap[codename];
     const typeId = contentTypeMap[item.system.type];
 
-    if (!allowedIds.has(typeId)) {
-      invalid.push(codename);
+    if (!allowedIds.has(typeId) && !invalid.includes(item.system.type)) {
+      invalid.push(item.system.type);
     }
   }
 
@@ -225,8 +225,9 @@ function validateModularContent(elementDef, elementValue, errors) {
   if (count === 0) return;
 
   if (elementDef.allowed_content_types) {
-    const invalidItems = findInvalidLinkedItems(elementValue.value, elementValue.linkedItems, elementDef.allowed_content_types);
-    errors.push(invalidItems);
+    const invalidItems = findInvalidLinkedItemTypes(elementValue.value, elementValue.linkedItems, elementDef.allowed_content_types);
+    errors.push(...invalidItems.map(item => `${elementDef.codename} does not allow ${item} types`));
+
   }
 
   if (elementDef.item_count_limit) {
