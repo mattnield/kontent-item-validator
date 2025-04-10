@@ -4,21 +4,30 @@ import { createDeliveryClient } from '@kontent-ai/delivery-sdk';
 
 let dapiClient = null;
 let mapiClient = null;
-let contentTypes = null
+let contentTypes = null;
+let environmentId = '';
+let dapiPreviewKey = '';
+let mapiKey = '';
+
+function getKeys(config) {
+  environmentId = (config && config.environmentId) ? config.environmentId : import.meta.env.VITE_KONTENT_ENVIRONMENT_ID;
+  dapiPreviewKey = (config && config.dapiPreviewKey) ? config.dapiPreviewKey : import.meta.env.VITE_KONTENT_PREVIEW_API_KEY;
+  mapiKey = (config && config.mapiKey) ? config.mapiKey : import.meta.env.VITE_KONTENT_MANAGEMENT_API_KEY;
+}
 
 /** Creates the management client */
 function getManagementClient() {
   return createManagementClient({
-    environmentId: import.meta.env.VITE_KONTENT_ENVIRONMENT_ID,
-    apiKey: import.meta.env.VITE_KONTENT_MANAGEMENT_API_KEY,
+    environmentId: environmentId,
+    apiKey: mapiKey,
   });
 }
 
 /** Creates the delivery client */
 function getDeliveryClient() {
   return createDeliveryClient({
-    environmentId: import.meta.env.VITE_KONTENT_ENVIRONMENT_ID,
-    previewApiKey: import.meta.env.VITE_KONTENT_PREVIEW_API_KEY,
+    environmentId: environmentId,
+    previewApiKey: dapiPreviewKey,
     defaultQueryConfig: {
       usePreviewMode: true,
     },
@@ -38,8 +47,10 @@ async function getAllTypes() {
   return response.data.items;
 }
 
-export async function validateLanguageVariant(itemCodename, languageCodename) {
-  console.clear();
+export async function validateLanguageVariant(itemCodename, languageCodename, configuration) {
+  //console.clear();
+  console.log(configuration);
+  getKeys(configuration);
   mapiClient = getManagementClient();
   dapiClient = getDeliveryClient();
   contentTypes = await getAllTypes();
