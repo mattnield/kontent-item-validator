@@ -78,6 +78,9 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     }
 
     switch (elementDef.type) {
+      case 'number':
+        validateNumber(elementDef, elementValue, errors);
+        break;
       case 'text':
       case 'url_slug':
         validateText(elementDef, elementValue, errors);
@@ -98,6 +101,13 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     isValid: errors.length === 0,
     errors,
   };
+}
+
+/**
+ * Validates a number based on the configuration in Kontent.AI
+ */
+function validateNumber(elementDef, elementValue, errors) {
+  if (elementDef.is_required && elementValue.value === null) errors.push(`${elementDef.codename} is required`);
 }
 
 /**
@@ -122,8 +132,9 @@ function validWordCount(text, maxWords) {
 function validateText(elementDef, elementValue, errors) {
   if (elementDef.is_required && elementValue.value === "") errors.push(`${elementDef.codename} is required`);
   if (elementDef.maximum_text_length) {
-    if (elementDef.maximum_text_length.applies_to === 'character' && elementValue.value.length > elementDef.maximum_text_length.value)
-      errors.push(`${elementDef.codename} lenght is too long`);
+    console.log(elementDef.maximum_text_length);
+    if (elementDef.maximum_text_length.applies_to === 'characters' && elementValue.value.length > elementDef.maximum_text_length.value)
+      errors.push(`${elementDef.codename} value is too long`);
     else {
       if (!validWordCount(elementValue.value, elementDef.maximum_text_length.value))
         errors.push(`${elementDef.codename} contains too many words`);
@@ -136,10 +147,11 @@ function validateText(elementDef, elementValue, errors) {
  * Takes a text-based element and looks to see if it passes and required regular expression
  */
 function validateRegex(elementDef, elementValue, errors) {
+  console.log(elementDef.validation_regex);
   if (elementDef.validation_regex && elementDef.validation_regex.is_active) {
-    const regex = new RegExp(elementDef.validation_regex.regex);
+    const regex = new RegExp(elementDef.validation_regex.regex, elementDef.validation_regex.flags ?? '');
     if (!regex.test(elementValue.value)) {
-      errors.push(`${elementDef.codename} does not match the regex: ${elementDef.validation_regex.validation_message}`);
+      errors.push(`${elementDef.codename} value does not match the regex: ${elementDef.validation_regex.validation_message}`);
     }
   }
 }
@@ -196,6 +208,7 @@ function findInvalidLinkedItemTypes(linkedItemCodenames, linkedItems, allowedTyp
   const invalid = [];
 
   // Convert allowed IDs to a Set for fast lookup
+  if (allowedTypeIds.length === 0) return invalid;
   const allowedIds = new Set(allowedTypeIds.map(t => t.id));
 
   // Create a map of contentTypeCodename → ID for quick lookup
