@@ -77,6 +77,9 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     }
 
     switch (elementDef.type) {
+      case 'taxonomy':
+        validateTaxonomy(elementDef, elementValue, errors);
+        break;
       case 'asset':
         validateAsset(elementDef, elementValue, errors);
         break;
@@ -106,6 +109,35 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     isValid: errors.length === 0,
     errors,
   };
+}
+
+/**
+ * Validates a taxonomy elemnt value against the type definition
+ * 
+ * @param {*} elementDef 
+ * @param {*} elementValue 
+ * @param {*} errors 
+ */
+function validateTaxonomy(elementDef, elementValue, errors) {
+  if (elementDef.is_required && elementValue.value.length === 0) {
+    errors.push(`${elementDef.codename} is required`);
+    return;
+  }
+
+  if (elementDef.term_count_limit) {
+    const count = elementValue.value.length;
+    switch (elementDef.term_count_limit.condition) {
+      case 'at_least':
+        if (elementDef.term_count_limit.value > count) errors.push(`${elementDef.codename} does not have enough terms`);
+        break;
+      case 'exactly':
+        if (elementDef.term_count_limit.value !== count) errors.push(`${elementDef.codename} does not have the correct number of terms`);
+        break;
+      default:
+        if (elementDef.term_count_limit.value < count) errors.push(`${elementDef.codename} has too many terms`);
+        break;
+    }
+  }
 }
 
 /**
