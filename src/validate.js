@@ -48,8 +48,7 @@ async function getAllTypes() {
 }
 
 export async function validateLanguageVariant(itemCodename, languageCodename, configuration) {
-  //console.clear();
-  console.log(configuration);
+  console.clear();
   getKeys(configuration);
   mapiClient = getManagementClient();
   dapiClient = getDeliveryClient();
@@ -78,6 +77,9 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     }
 
     switch (elementDef.type) {
+      case 'date_time':
+        validateDate(elementDef, elementValue, errors);
+        break;
       case 'number':
         validateNumber(elementDef, elementValue, errors);
         break;
@@ -101,6 +103,12 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     isValid: errors.length === 0,
     errors,
   };
+}
+/**
+ * Validates a number based on the configuration in Kontent.AI
+ */
+function validateDate(elementDef, elementValue, errors) {
+  if (elementDef.is_required && elementValue.value === null) errors.push(`${elementDef.codename} is required`);
 }
 
 /**
@@ -132,7 +140,6 @@ function validWordCount(text, maxWords) {
 function validateText(elementDef, elementValue, errors) {
   if (elementDef.is_required && elementValue.value === "") errors.push(`${elementDef.codename} is required`);
   if (elementDef.maximum_text_length) {
-    console.log(elementDef.maximum_text_length);
     if (elementDef.maximum_text_length.applies_to === 'characters' && elementValue.value.length > elementDef.maximum_text_length.value)
       errors.push(`${elementDef.codename} value is too long`);
     else {
@@ -147,7 +154,6 @@ function validateText(elementDef, elementValue, errors) {
  * Takes a text-based element and looks to see if it passes and required regular expression
  */
 function validateRegex(elementDef, elementValue, errors) {
-  console.log(elementDef.validation_regex);
   if (elementDef.validation_regex && elementDef.validation_regex.is_active) {
     const regex = new RegExp(elementDef.validation_regex.regex, elementDef.validation_regex.flags ?? '');
     if (!regex.test(elementValue.value)) {
