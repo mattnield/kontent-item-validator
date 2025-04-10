@@ -105,7 +105,7 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
   };
 }
 /**
- * Validates a number based on the configuration in Kontent.AI
+ * Validates a date/time based on the configuration in Kontent.AI
  */
 function validateDate(elementDef, elementValue, errors) {
   if (elementDef.is_required && elementValue.value === null) errors.push(`${elementDef.codename} is required`);
