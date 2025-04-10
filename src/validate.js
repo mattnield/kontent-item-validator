@@ -83,8 +83,6 @@ export async function validateLanguageVariant(itemCodename, languageCodename) {
     }
   });
 
-  console.log(errors)
-
   return {
     isValid: errors.length === 0,
     errors,
@@ -111,8 +109,6 @@ function validWordCount(text, maxWords) {
  * @param {*} errors Existing errors array to add to
  */
 function validateText(elementDef, elementValue, errors) {
-  console.log(elementDef);
-  console.log(elementValue);
   if (elementDef.is_required && elementValue.value === "") errors.push(`${elementDef.codename} is required`);
   if (elementDef.maximum_text_length) {
     if (elementDef.maximum_text_length.applies_to === 'character' && elementValue.value.length > elementDef.maximum_text_length.value)
