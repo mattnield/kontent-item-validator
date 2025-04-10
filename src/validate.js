@@ -77,6 +77,9 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     }
 
     switch (elementDef.type) {
+      case 'asset':
+        validateAsset(elementDef, elementValue, errors);
+        break;
       case 'date_time':
         validateDate(elementDef, elementValue, errors);
         break;
@@ -104,6 +107,79 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     errors,
   };
 }
+
+/**
+ * Validates a number based on the configuration in Kontent.AI
+ */
+function validateAsset(elementDef, elementValue, errors) {
+  if (elementDef.is_required && elementValue.value.length === 0) {
+    errors.push(`${elementDef.codename} is required`);
+    return;
+  }
+
+  const adjustableImageMimeTypes = new Set([
+    'image/webp',
+    'image/jpeg',
+    'image/png',
+    'image/gif'
+  ]);
+
+  // Number limit
+  if (elementDef.asset_count_limit) {
+    const count = elementValue.value.length;
+    switch (elementDef.asset_count_limit.condition) {
+      case 'at_least':
+        if (elementDef.asset_count_limit.value > count) errors.push(`${elementDef.codename} does not have enough assets`);
+        break;
+      case 'exactly':
+        if (elementDef.asset_count_limit.value !== count) errors.push(`${elementDef.codename} does not have the correct number of assets`);
+        break;
+      default:
+        if (elementDef.asset_count_limit.value < count) errors.push(`${elementDef.codename} has too many assets`);
+        break;
+    }
+  }
+  for (const asset of elementValue.value) {
+    // Width limit
+    if (elementDef.image_width_limit) {
+      switch (elementDef.image_width_limit.condition) {
+        case 'at_least':
+          if (elementDef.image_width_limit.value > asset.width) errors.push(`${elementDef.codename} specifies an asset which is not wide enough`);
+          break;
+        case 'exactly':
+          if (elementDef.image_width_limit.value !== asset.width) errors.push(`${elementDef.codename} specifies an asset which is not the right width`);
+          break;
+        default:
+          if (elementDef.image_width_limit.value < asset.width) errors.push(`${elementDef.codename} specifies an asset which is too wide`);
+          break;
+      }
+    }
+    // Height limit
+    if (elementDef.image_height_limit) {
+      switch (elementDef.image_height_limit.condition) {
+        case 'at_least':
+          if (elementDef.image_height_limit.value > asset.height) errors.push(`${elementDef.codename} specifies an asset which is not high enough`);
+          break;
+        case 'exactly':
+          if (elementDef.image_height_limit.value !== asset.height) errors.push(`${elementDef.codename} specifies an asset which is not the right height`);
+          break;
+        default:
+          if (elementDef.image_height_limit.value < asset.height) errors.push(`${elementDef.codename} specifies an asset which is too high`);
+          break;
+      }
+    }
+    // Size limit
+    if (elementDef.maximum_file_size) {
+      if (asset.size > elementDef.maximum_file_size) errors.push(`${elementDef.codename} specifies an asset which is too large`);
+    }
+    // Type limit
+    if (elementDef.allowed_file_types === 'adjustable') {
+      // Adjustable images are: image/webp, image/jpeg, image/png, image/gif
+      if (!adjustableImageMimeTypes.has(asset.type)) errors.push(`${elementDef.codename} specifies an esset that is not an adjustable image`);
+    }
+  }
+}
+
 /**
  * Validates a date/time based on the configuration in Kontent.AI
  */
