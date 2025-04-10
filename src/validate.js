@@ -77,6 +77,9 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     }
 
     switch (elementDef.type) {
+      case 'custom':
+        validateCustomElement(elementDef, elementValue, errors);
+        break;
       case 'taxonomy':
         validateTaxonomy(elementDef, elementValue, errors);
         break;
@@ -112,7 +115,21 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
 }
 
 /**
- * Validates a taxonomy elemnt value against the type definition
+ * Validates a custom element value against the type definition
+ * 
+ * @param {*} elementDef 
+ * @param {*} elementValue 
+ * @param {*} errors 
+ */
+function validateCustomElement(elementDef, elementValue, errors) {
+  if (elementDef.is_required && (elementValue.value ?? '' === '')) {
+    errors.push(`${elementDef.codename} is required`);
+    return;
+  }
+}
+
+/**
+ * Validates a taxonomy element value against the type definition
  * 
  * @param {*} elementDef 
  * @param {*} elementValue 
