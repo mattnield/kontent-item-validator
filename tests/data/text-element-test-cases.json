@@ -1,0 +1,101 @@
+[
+  {
+    "description": "required value is not supplied",
+    "elementDef": {
+      "codename": "title",
+      "type": "text",
+      "is_required": true
+    },
+    "elementVal": {
+      "value": ""
+    },
+    "validExpected": false
+  },
+  {
+    "description": "value is too many characters",
+    "elementDef": {
+      "codename": "title",
+      "type": "text",
+      "is_required": true,
+      "maximum_text_length": {
+        "value": 10,
+        "applies_to": "characters"
+      }
+    },
+    "elementVal": {
+      "value": "This title is too long."
+    },
+    "validExpected": false
+  },
+  {
+    "description": "value is too many words",
+    "elementDef": {
+      "codename": "title",
+      "type": "text",
+      "is_required": true,
+      "maximum_text_length": {
+        "value": 4,
+        "applies_to": "words"
+      }
+    },
+    "elementVal": {
+      "value": "This has too many words."
+    },
+    "validExpected": false
+  },
+  {
+    "description": "value is options",
+    "elementDef": {
+      "codename": "title",
+      "type": "text"
+    },
+    "elementVal": {
+      "value": ""
+    },
+    "validExpected": true
+  },
+  {
+    "description": "required value is supplied",
+    "elementDef": {
+      "codename": "title",
+      "type": "text",
+      "is_required": true
+    },
+    "elementVal": {
+      "value": "This is valid."
+    },
+    "validExpected": true
+  },
+  {
+    "description": "value is not too long",
+    "elementDef": {
+      "codename": "title",
+      "type": "text",
+      "is_required": true,
+      "maximum_text_length": {
+        "value": 150,
+        "applies_to": "characters"
+      }
+    },
+    "elementVal": {
+      "value": "This is a perfectly fine title."
+    },
+    "validExpected": true
+  },
+  {
+    "description": "value does not have too many words",
+    "elementDef": {
+      "codename": "title",
+      "type": "text",
+      "is_required": true,
+      "maximum_text_length": {
+        "value": 5,
+        "applies_to": "words"
+      }
+    },
+    "elementVal": {
+      "value": "This has enough words."
+    },
+    "validExpected": true
+  }
+]

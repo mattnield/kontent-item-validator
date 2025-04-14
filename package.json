@@ -6,14 +6,17 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "devDependencies": {
     "vite": "^6.2.0",
-    "vite-plugin-mkcert": "^1.17.8"
+    "vite-plugin-mkcert": "^1.17.8",
+    "vitest": "^3.1.1"
   },
   "dependencies": {
     "@kontent-ai/delivery-sdk": "^16.0.0",
-    "@kontent-ai/management-sdk": "^7.7.1"
+    "@kontent-ai/management-sdk": "^7.7.1",
+    "json-stringify-safe": "^5.0.1"
   }
 }

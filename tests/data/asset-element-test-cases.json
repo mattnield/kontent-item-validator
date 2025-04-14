@@ -1,0 +1,75 @@
+[
+  {
+    "description": "asset - valid image type",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/jpeg",
+          "name": "cover.jpg"
+        }
+      ]
+    },
+    "validExpected": true
+  },
+  {
+    "description": "asset - invalid image type",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/svg+xml",
+          "name": "cover.svg"
+        }
+      ]
+    },
+    "validExpected": false
+  },
+  {
+    "description": "modular content - invalid item type",
+    "elementDef": {
+      "codename": "related_articles",
+      "type": "modular_content",
+      "required": true,
+      "allowed_content_types": [
+        {
+          "id": "article-type-id"
+        }
+      ]
+    },
+    "elementVal": {
+      "value": {
+        "linkedItems": [
+          "item-id-2"
+        ]
+      }
+    },
+    "linkedItems": [
+      {
+        "system": {
+          "id": "item-id-2",
+          "type": "video"
+        }
+      }
+    ],
+    "contentTypes": [
+      {
+        "codename": "video",
+        "id": "video-type-id"
+      },
+      {
+        "codename": "article",
+        "id": "article-type-id"
+      }
+    ],
+    "validExpected": false
+  }
+]

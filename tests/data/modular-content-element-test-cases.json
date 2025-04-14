@@ -1,0 +1,131 @@
+[
+  {
+    "description": "modular content - valid single linked item of allowed type",
+    "elementDef": {
+      "codename": "related_articles",
+      "type": "modular_content",
+      "required": true,
+      "allowed_content_types": [
+        {
+          "id": "article-type-id"
+        }
+      ]
+    },
+    "elementVal": {
+      "linkedItems": [
+        {
+          "system": {
+            "codename": "item-id-1",
+            "id": "item-id-1",
+            "type": "article"
+          }
+        }
+      ],
+      "value": [
+        "item-id-1"
+      ]
+    },
+    "contentTypes": [
+      {
+        "codename": "article",
+        "id": "article-type-id"
+      }
+    ],
+    "validExpected": true
+  },
+  {
+    "description": "modular content - invalid single linked item of allowed type",
+    "elementDef": {
+      "codename": "related_articles",
+      "type": "modular_content",
+      "required": true,
+      "allowed_content_types": [
+        {
+          "id": "blog-type-id"
+        }
+      ]
+    },
+    "elementVal": {
+      "linkedItems": [
+        {
+          "system": {
+            "codename": "item-id-1",
+            "id": "item-id-1",
+            "type": "article"
+          }
+        }
+      ],
+      "value": [
+        "item-id-1"
+      ]
+    },
+    "contentTypes": [
+      {
+        "codename": "article",
+        "id": "article-type-id"
+      },
+      {
+        "codename": "blog",
+        "id": "blog-type-id"
+      }
+    ],
+    "validExpected": false
+  },
+  {
+    "description": "modular content - too many linked items",
+    "elementDef": {
+      "codename": "related_articles",
+      "type": "modular_content",
+      "required": true,
+      "item_count_limit": {
+        "condition": "at_most",
+        "value": 3
+      }
+    },
+    "elementVal": {
+      "linkedItems": [
+        {
+          "system": {
+            "codename": "item-id-1",
+            "id": "item-id-1",
+            "type": "article"
+          }
+        },
+        {
+          "system": {
+            "codename": "item-id-2",
+            "id": "item-id-2",
+            "type": "article"
+          }
+        },
+        {
+          "system": {
+            "codename": "item-id-3",
+            "id": "item-id-3",
+            "type": "article"
+          }
+        },
+        {
+          "system": {
+            "codename": "item-id-4",
+            "id": "item-id-4",
+            "type": "article"
+          }
+        }
+      ],
+      "value": [
+        "item-id-1",
+        "item-id-2",
+        "item-id-3",
+        "item-id-4"
+      ]
+    },
+    "contentTypes": [
+      {
+        "codename": "article",
+        "id": "article-type-id"
+      }
+    ],
+    "validExpected": false
+  }
+]

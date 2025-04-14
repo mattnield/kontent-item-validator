@@ -47,11 +47,11 @@ async function getAllTypes() {
   return response.data.items;
 }
 
-export async function validateLanguageVariant(itemCodename, languageCodename, configuration) {
+export async function validateLanguageVariant(itemCodename, languageCodename, configuration, deps = {}) {
   console.clear();
   getKeys(configuration);
-  mapiClient = getManagementClient();
-  dapiClient = getDeliveryClient();
+  mapiClient = deps.managementClient || getManagementClient();
+  dapiClient = deps.deliveryClient || getDeliveryClient();
   contentTypes = await getAllTypes();
 
   const dapiResponse = await dapiClient
@@ -59,7 +59,7 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     .languageParameter(languageCodename)
     .equalsFilter('system.codename', itemCodename)
     .equalsFilter('system.language', languageCodename)
-    .depthParameter(2)
+    .depthParameter(1)
     .toPromise();
 
   const item = dapiResponse.data?.items[0];
@@ -78,32 +78,32 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
 
     switch (elementDef.type) {
       case 'custom':
-        validateCustomElement(elementDef, elementValue, errors);
+        errors.push(...validateCustomElement(elementDef, elementValue));
         break;
       case 'taxonomy':
-        validateTaxonomy(elementDef, elementValue, errors);
+        errors.push(...validateTaxonomyElement(elementDef, elementValue));
         break;
       case 'asset':
-        validateAsset(elementDef, elementValue, errors);
+        errors.push(...validateAssetElement(elementDef, elementValue));
         break;
       case 'date_time':
-        validateDate(elementDef, elementValue, errors);
+        errors.push(...validateDateElement(elementDef, elementValue));
         break;
       case 'number':
-        validateNumber(elementDef, elementValue, errors);
+        errors.push(...validateNumberElement(elementDef, elementValue));
         break;
       case 'text':
       case 'url_slug':
-        validateText(elementDef, elementValue, errors);
+        errors.push(...validateTextElement(elementDef, elementValue));
         break;
       case 'rich_text':
-        validateRichText(elementDef, elementValue, errors);
+        errors.push(...validateRichTextElement(elementDef, elementValue));
         break;
       case 'multiple_choice':
-        validateMultipleChoice(elementDef, elementValue, errors);
+        errors.push(...validateMultipleChoiceElement(elementDef, elementValue));
         break;
       case 'modular_content':
-        validateModularContent(elementDef, elementValue, errors);
+        errors.push(...validateModularContentElement(elementDef, elementValue, contentTypes));
         break;
     }
   });
@@ -115,55 +115,13 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
 }
 
 /**
- * Validates a custom element value against the type definition
- * 
- * @param {*} elementDef 
- * @param {*} elementValue 
- * @param {*} errors 
- */
-function validateCustomElement(elementDef, elementValue, errors) {
-  if (elementDef.is_required && (elementValue.value ?? '' === '')) {
-    errors.push(`${elementDef.codename} is required`);
-    return;
-  }
-}
-
-/**
- * Validates a taxonomy element value against the type definition
- * 
- * @param {*} elementDef 
- * @param {*} elementValue 
- * @param {*} errors 
- */
-function validateTaxonomy(elementDef, elementValue, errors) {
-  if (elementDef.is_required && elementValue.value.length === 0) {
-    errors.push(`${elementDef.codename} is required`);
-    return;
-  }
-
-  if (elementDef.term_count_limit) {
-    const count = elementValue.value.length;
-    switch (elementDef.term_count_limit.condition) {
-      case 'at_least':
-        if (elementDef.term_count_limit.value > count) errors.push(`${elementDef.codename} does not have enough terms`);
-        break;
-      case 'exactly':
-        if (elementDef.term_count_limit.value !== count) errors.push(`${elementDef.codename} does not have the correct number of terms`);
-        break;
-      default:
-        if (elementDef.term_count_limit.value < count) errors.push(`${elementDef.codename} has too many terms`);
-        break;
-    }
-  }
-}
-
-/**
  * Validates a number based on the configuration in Kontent.AI
  */
-function validateAsset(elementDef, elementValue, errors) {
+export function validateAssetElement(elementDef, elementValue) {
+  let errors = [];
   if (elementDef.is_required && elementValue.value.length === 0) {
     errors.push(`${elementDef.codename} is required`);
-    return;
+    return errors;
   }
 
   const adjustableImageMimeTypes = new Set([
@@ -227,20 +185,178 @@ function validateAsset(elementDef, elementValue, errors) {
       if (!adjustableImageMimeTypes.has(asset.type)) errors.push(`${elementDef.codename} specifies an esset that is not an adjustable image`);
     }
   }
+
+  return errors;
+}
+
+/**
+ * Validates a custom element value against the type definition
+ * 
+ * @param {*} elementDef 
+ * @param {*} elementValue 
+ */
+export function validateCustomElement(elementDef, elementValue) {
+  let errors = [];
+  if (elementDef.is_required && (elementValue.value ?? '' === '')) {
+    errors.push(`${elementDef.codename} is required`);
+    return errors;
+  }
+  return errors;
 }
 
 /**
  * Validates a date/time based on the configuration in Kontent.AI
  */
-function validateDate(elementDef, elementValue, errors) {
+export function validateDateElement(elementDef, elementValue) {
+  let errors = [];
   if (elementDef.is_required && elementValue.value === null) errors.push(`${elementDef.codename} is required`);
+  return errors;
+}
+
+/**
+ * Validates an element from a content item that is modular content/linked items
+ * 
+ * @param {*} elementDef Configuration from the Management API
+ * @param {*} elementValue Value of the element from the Delivery API
+ * @param {*} errors Arrors array to add to
+ * @returns 
+ */
+export function validateModularContentElement(elementDef, elementValue, knownContentTypes) {
+  let errors = [];
+  const count = (elementValue.value || [])?.length;
+
+  if (elementDef.is_required && count === 0) errors.push(`${element.codename} is required`);
+
+  if (count === 0) return errors;
+
+  if (elementDef.allowed_content_types) {
+    const invalidItems = findInvalidLinkedItemTypes(elementValue.value, elementValue.linkedItems, elementDef.allowed_content_types, knownContentTypes);
+    errors.push(...invalidItems.map(item => `${elementDef.codename} does not allow ${item} types`));
+
+  }
+
+  if (elementDef.item_count_limit) {
+    switch (elementDef.item_count_limit.condition) {
+      case 'at_most':
+        if (count > elementDef.item_count_limit.value) errors.push(`${elementDef.codename} has more than maximum allowed items (${elementDef.item_count_limit.value})`);
+        break;
+      case 'at_least':
+        if (count < elementDef.item_count_limit.value) errors.push(`${elementDef.codename} has fewer than minimum allowed items (${elementDef.item_count_limit.value})`);
+        break;
+      case 'exactly':
+        if (count !== elementDef.item_count_limit.value) errors.push(`${elementDef.codename} does not have the required number of items (${elementDef.item_count_limit.value})`);
+        break;
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Validates a multiple_choice content element based upon lenght, and selected item(s)
+ * 
+ * @param {*} elementDef 
+ * @param {*} elementValue 
+ * @param {*} errors 
+ * @returns 
+ */
+export function validateMultipleChoiceElement(elementDef, elementValue) {
+  let errors = [];
+  if (elementDef.is_required && elementValue.value.length === 0) {
+    errors.push(`${elementDef.codename} is required`);
+    return errors;
+  }
+
+  if (elementDef.mode === 'single' && elementValue.value.length > 1) rrors.push(`${elementDef.codename} can only haveone value`);
+
+  for (const value of elementValue.value) {
+    if (!elementDef.options.find(option => option.codename === value.codename)) errors.push(`The value ${value.codename} is not a valid option for ${elementDef.codename}`);
+  }
+
+  return errors;
 }
 
 /**
  * Validates a number based on the configuration in Kontent.AI
  */
-function validateNumber(elementDef, elementValue, errors) {
+export function validateNumberElement(elementDef, elementValue) {
+  let errors = [];
   if (elementDef.is_required && elementValue.value === null) errors.push(`${elementDef.codename} is required`);
+  return errors;
+}
+
+/**
+ * Validates RichText elements, checking for:
+ * - empty values
+ * 
+ * @param {*} elementDef 
+ * @param {*} elementValue 
+ */
+export function validateRichTextElement(elementDef, elementValue) {
+  let errors = [];
+  if (elementDef.is_required && elementValue.value === '<p><br></p>') {
+    errors.push(`${elementDef.codename} is required`);
+  }
+
+  // TODO: Check for inline component validity.
+
+  return errors;
+}
+
+/**
+ * Validates a taxonomy element value against the type definition
+ * 
+ * @param {*} elementDef 
+ * @param {*} elementValue 
+ */
+export function validateTaxonomyElement(elementDef, elementValue) {
+  let errors = [];
+  if (elementDef.is_required && elementValue.value.length === 0) {
+    errors.push(`${elementDef.codename} is required`);
+    return errors;
+  }
+
+  if (elementDef.term_count_limit) {
+    const count = elementValue.value.length;
+    switch (elementDef.term_count_limit.condition) {
+      case 'at_least':
+        if (elementDef.term_count_limit.value > count) errors.push(`${elementDef.codename} does not have enough terms`);
+        break;
+      case 'exactly':
+        if (elementDef.term_count_limit.value !== count) errors.push(`${elementDef.codename} does not have the correct number of terms`);
+        break;
+      default:
+        if (elementDef.term_count_limit.value < count) errors.push(`${elementDef.codename} has too many terms`);
+        break;
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Validates the text and url_slug elemnts based on rules in Kontent.AI
+ * 
+ * @param {*} elementDef The type definition
+ * @param {*} elementValue The element value
+ */
+export function validateTextElement(elementDef, elementValue) {
+  let errors = [];
+  if (elementDef.is_required && elementValue.value === "") {
+    errors.push(`${elementDef.codename} is required`);
+    return errors;
+  }
+  if (elementDef.maximum_text_length) {
+    if (elementDef.maximum_text_length.applies_to === 'characters' && elementValue.value.length > elementDef.maximum_text_length.value)
+      errors.push(`${elementDef.codename} value is too long`);
+    else {
+      if (!validWordCount(elementValue.value, elementDef.maximum_text_length.value))
+        errors.push(`${elementDef.codename} contains too many words`);
+    }
+  }
+  errors.push(...validateRegex(elementDef, elementValue));
+
+  return errors;
 }
 
 /**
@@ -255,53 +371,22 @@ function validWordCount(text, maxWords) {
   return wordCount <= maxWords;
 }
 
-/**
- * Validates the text and url_slug elemnts based on rules in Kontent.AI
- * 
- * @param {*} elementDef The type definition
- * @param {*} elementValue The element value
- * @param {*} errors Existing errors array to add to
- */
-function validateText(elementDef, elementValue, errors) {
-  if (elementDef.is_required && elementValue.value === "") errors.push(`${elementDef.codename} is required`);
-  if (elementDef.maximum_text_length) {
-    if (elementDef.maximum_text_length.applies_to === 'characters' && elementValue.value.length > elementDef.maximum_text_length.value)
-      errors.push(`${elementDef.codename} value is too long`);
-    else {
-      if (!validWordCount(elementValue.value, elementDef.maximum_text_length.value))
-        errors.push(`${elementDef.codename} contains too many words`);
-    }
-  }
-  validateRegex(elementDef, elementValue, errors);
-}
 
 /**
  * Takes a text-based element and looks to see if it passes and required regular expression
  */
-function validateRegex(elementDef, elementValue, errors) {
+function validateRegex(elementDef, elementValue) {
+  let errors = [];
   if (elementDef.validation_regex && elementDef.validation_regex.is_active) {
     const regex = new RegExp(elementDef.validation_regex.regex, elementDef.validation_regex.flags ?? '');
     if (!regex.test(elementValue.value)) {
       errors.push(`${elementDef.codename} value does not match the regex: ${elementDef.validation_regex.validation_message}`);
     }
   }
+
+  return errors;
 }
 
-/**
- * Validates RichText elements, checking for:
- * - empty values
- * 
- * @param {*} elementDef 
- * @param {*} elementValue 
- * @param {*} errors 
- */
-function validateRichText(elementDef, elementValue, errors) {
-  if (elementDef.is_required && elementValue.value === '<p><br></p>') {
-    errors.push(`${elementDef.codename} is required`);
-  }
-
-  // TODO: Check for inline component validity.
-}
 
 /**
  * Loads elements from the current content type and any contained snippets.
@@ -335,7 +420,7 @@ async function getTypeElements(contentType) {
  * @param {Array<string>} allowedTypeIds - List of allowed type GUIDs (not flat, the had an `id` prop).
  * @returns {Array<string>} - Codenames of invalid linked items.
  */
-function findInvalidLinkedItemTypes(linkedItemCodenames, linkedItems, allowedTypeIds) {
+function findInvalidLinkedItemTypes(linkedItemCodenames, linkedItems, allowedTypeIds, knownContentTypes) {
   const invalid = [];
 
   // Convert allowed IDs to a Set for fast lookup
@@ -344,7 +429,7 @@ function findInvalidLinkedItemTypes(linkedItemCodenames, linkedItems, allowedTyp
 
   // Create a map of contentTypeCodename → ID for quick lookup
   const contentTypeMap = Object.fromEntries(
-    contentTypes.map(type => [type.codename, type.id])
+    knownContentTypes.map(type => [type.codename, type.id])
   );
 
   // Create a map of codename → linked item
@@ -362,63 +447,6 @@ function findInvalidLinkedItemTypes(linkedItemCodenames, linkedItems, allowedTyp
   }
 
   return invalid;
-}
-
-/**
- * Validates an element from a content item that is modular content/linked items
- * 
- * @param {*} elementDef Configuration from the Management API
- * @param {*} elementValue Value of the element from the Delivery API
- * @param {*} errors Arrors array to add to
- * @returns 
- */
-function validateModularContent(elementDef, elementValue, errors) {
-  const count = (elementValue.value || [])?.length;
-
-  if (elementDef.is_required && count === 0) errors.push(`${element.codename} is required`);
-
-  if (count === 0) return;
-
-  if (elementDef.allowed_content_types) {
-    const invalidItems = findInvalidLinkedItemTypes(elementValue.value, elementValue.linkedItems, elementDef.allowed_content_types);
-    errors.push(...invalidItems.map(item => `${elementDef.codename} does not allow ${item} types`));
-
-  }
-
-  if (elementDef.item_count_limit) {
-    switch (elementDef.item_count_limit.condition) {
-      case 'at_most':
-        if (count > elementDef.item_count_limit.value) errors.push(`${elementDef.codename} has more than maximum allowed items (${elementDef.item_count_limit.value})`);
-        break;
-      case 'at_least':
-        if (count < elementDef.item_count_limit.value) errors.push(`${elementDef.codename} has fewer than minimum allowed items (${elementDef.item_count_limit.value})`);
-        break;
-      case 'exactly':
-        if (count !== elementDef.item_count_limit.value) errors.push(`${elementDef.codename} does not have the required number of items (${elementDef.item_count_limit.value})`);
-        break;
-    }
-  }
-}
-
-/**
- * Validates a multiple_choice content element based upon lenght, and selected item(s)
- * 
- * @param {*} elementDef 
- * @param {*} elementValue 
- * @param {*} errors 
- * @returns 
- */
-function validateMultipleChoice(elementDef, elementValue, errors) {
-  if (elementDef.is_required && elementValue.value.length === 0) {
-    errors.push(`${elementDef.codename} is required`);
-    return;
-  }
-
-  if (elementDef.mode === 'single' && elementValue.value.length > 1) rrors.push(`${elementDef.codename} can only haveone value`);
-
-  for (const value of elementValue.value) {
-    if (!elementDef.options.find(option => option.codename === value.codename)) errors.push(`The value ${value.codename} is not a valid option for ${elementDef.codename}`);
-  }
 }
 
 export async function moveToWorkflowStep(itemId, languageId, stepId) {
