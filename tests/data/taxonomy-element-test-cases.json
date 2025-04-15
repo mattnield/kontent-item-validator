@@ -1,0 +1,318 @@
+[
+  {
+    "description": "taxonomy - is_required - missing value and required",
+    "elementDef": {
+      "taxonomy_group": {
+        "id": "bf111447-d3ba-49e3-8cf7-8dfa1b5c2eea"
+      },
+      "term_count_limit": null,
+      "name": "Taxonomy Element",
+      "is_required": true,
+      "type": "taxonomy",
+      "id": "be052194-27d0-4e35-b0aa-491fe26efc2c",
+      "codename": "taxonomy_element",
+      "content_group": {
+        "id": "8cc74a4a-3387-44b1-95e0-442027b2d8fb"
+      }
+    },
+    "elementVal": {
+      "name": "Taxonomy Element",
+      "type": "taxonomy",
+      "value": [],
+      "taxonomyGroup": "product_filter"
+    },
+    "contentTypes": [],
+    "validExpected": false
+  },
+  {
+    "description": "taxonomy - is_required - missing value and not required",
+    "elementDef": {
+      "taxonomy_group": {
+        "id": "bf111447-d3ba-49e3-8cf7-8dfa1b5c2eea"
+      },
+      "term_count_limit": null,
+      "default": null,
+      "name": "Taxonomy Element",
+      "is_required": false,
+      "type": "taxonomy",
+      "id": "be052194-27d0-4e35-b0aa-491fe26efc2c",
+      "codename": "taxonomy_element",
+      "content_group": {
+        "id": "8cc74a4a-3387-44b1-95e0-442027b2d8fb"
+      }
+    },
+    "elementVal": {
+      "name": "Taxonomy Element",
+      "type": "taxonomy",
+      "value": [
+        {
+          "name": "Red",
+          "codename": "red"
+        },
+        {
+          "name": "White",
+          "codename": "white"
+        },
+        {
+          "name": "Blue",
+          "codename": "blue"
+        }
+      ],
+      "taxonomyGroup": "product_filter"
+    },
+    "contentTypes": [],
+    "validExpected": true
+  },
+  {
+    "description": "taxonomy - term_count_limit - not enough terms",
+    "elementDef": {
+      "taxonomy_group": {
+        "id": "bf111447-d3ba-49e3-8cf7-8dfa1b5c2eea"
+      },
+      "term_count_limit": {
+        "condition": "at_least",
+        "value": 4
+      },
+      "default": null,
+      "name": "Taxonomy Element",
+      "is_required": false,
+      "type": "taxonomy",
+      "id": "be052194-27d0-4e35-b0aa-491fe26efc2c",
+      "codename": "taxonomy_element",
+      "content_group": {
+        "id": "8cc74a4a-3387-44b1-95e0-442027b2d8fb"
+      }
+    },
+    "elementVal": {
+      "name": "Taxonomy Element",
+      "type": "taxonomy",
+      "value": [
+        {
+          "name": "Red",
+          "codename": "red"
+        },
+        {
+          "name": "White",
+          "codename": "white"
+        },
+        {
+          "name": "Blue",
+          "codename": "blue"
+        }
+      ],
+      "taxonomyGroup": "product_filter"
+    },
+    "contentTypes": [],
+    "validExpected": false
+  },
+  {
+    "description": "taxonomy - term_count_limit - enough terms",
+    "elementDef": {
+      "taxonomy_group": {
+        "id": "bf111447-d3ba-49e3-8cf7-8dfa1b5c2eea"
+      },
+      "term_count_limit": {
+        "condition": "at_least",
+        "value": 2
+      },
+      "default": null,
+      "name": "Taxonomy Element",
+      "is_required": false,
+      "type": "taxonomy",
+      "id": "be052194-27d0-4e35-b0aa-491fe26efc2c",
+      "codename": "taxonomy_element",
+      "content_group": {
+        "id": "8cc74a4a-3387-44b1-95e0-442027b2d8fb"
+      }
+    },
+    "elementVal": {
+      "name": "Taxonomy Element",
+      "type": "taxonomy",
+      "value": [
+        {
+          "name": "Red",
+          "codename": "red"
+        },
+        {
+          "name": "White",
+          "codename": "white"
+        },
+        {
+          "name": "Blue",
+          "codename": "blue"
+        }
+      ],
+      "taxonomyGroup": "product_filter"
+    },
+    "contentTypes": [],
+    "validExpected": true
+  },
+  {
+    "description": "taxonomy - term_count_limit - wrong number of terms",
+    "elementDef": {
+      "taxonomy_group": {
+        "id": "bf111447-d3ba-49e3-8cf7-8dfa1b5c2eea"
+      },
+      "term_count_limit": {
+        "condition": "exactly",
+        "value": 2
+      },
+      "default": null,
+      "name": "Taxonomy Element",
+      "is_required": false,
+      "type": "taxonomy",
+      "id": "be052194-27d0-4e35-b0aa-491fe26efc2c",
+      "codename": "taxonomy_element",
+      "content_group": {
+        "id": "8cc74a4a-3387-44b1-95e0-442027b2d8fb"
+      }
+    },
+    "elementVal": {
+      "name": "Taxonomy Element",
+      "type": "taxonomy",
+      "value": [
+        {
+          "name": "Red",
+          "codename": "red"
+        },
+        {
+          "name": "White",
+          "codename": "white"
+        },
+        {
+          "name": "Blue",
+          "codename": "blue"
+        }
+      ],
+      "taxonomyGroup": "product_filter"
+    },
+    "contentTypes": [],
+    "validExpected": false
+  },
+  {
+    "description": "taxonomy - term_count_limit - right number of terms",
+    "elementDef": {
+      "taxonomy_group": {
+        "id": "bf111447-d3ba-49e3-8cf7-8dfa1b5c2eea"
+      },
+      "term_count_limit": {
+        "condition": "exactly",
+        "value": 3
+      },
+      "default": null,
+      "name": "Taxonomy Element",
+      "is_required": false,
+      "type": "taxonomy",
+      "id": "be052194-27d0-4e35-b0aa-491fe26efc2c",
+      "codename": "taxonomy_element",
+      "content_group": {
+        "id": "8cc74a4a-3387-44b1-95e0-442027b2d8fb"
+      }
+    },
+    "elementVal": {
+      "name": "Taxonomy Element",
+      "type": "taxonomy",
+      "value": [
+        {
+          "name": "Red",
+          "codename": "red"
+        },
+        {
+          "name": "White",
+          "codename": "white"
+        },
+        {
+          "name": "Blue",
+          "codename": "blue"
+        }
+      ],
+      "taxonomyGroup": "product_filter"
+    },
+    "contentTypes": [],
+    "validExpected": true
+  },
+  {
+    "description": "taxonomy - term_count_limit - not too many terms",
+    "elementDef": {
+      "taxonomy_group": {
+        "id": "bf111447-d3ba-49e3-8cf7-8dfa1b5c2eea"
+      },
+      "term_count_limit": {
+        "condition": "at_most",
+        "value": 3
+      },
+      "default": null,
+      "name": "Taxonomy Element",
+      "is_required": false,
+      "type": "taxonomy",
+      "id": "be052194-27d0-4e35-b0aa-491fe26efc2c",
+      "codename": "taxonomy_element",
+      "content_group": {
+        "id": "8cc74a4a-3387-44b1-95e0-442027b2d8fb"
+      }
+    },
+    "elementVal": {
+      "name": "Taxonomy Element",
+      "type": "taxonomy",
+      "value": [
+        {
+          "name": "Red",
+          "codename": "red"
+        },
+        {
+          "name": "White",
+          "codename": "white"
+        },
+        {
+          "name": "Blue",
+          "codename": "blue"
+        }
+      ],
+      "taxonomyGroup": "product_filter"
+    },
+    "contentTypes": [],
+    "validExpected": true
+  },
+  {
+    "description": "taxonomy - term_count_limit - too many terms",
+    "elementDef": {
+      "taxonomy_group": {
+        "id": "bf111447-d3ba-49e3-8cf7-8dfa1b5c2eea"
+      },
+      "term_count_limit": {
+        "condition": "at_most",
+        "value": 2
+      },
+      "default": null,
+      "name": "Taxonomy Element",
+      "is_required": false,
+      "type": "taxonomy",
+      "id": "be052194-27d0-4e35-b0aa-491fe26efc2c",
+      "codename": "taxonomy_element",
+      "content_group": {
+        "id": "8cc74a4a-3387-44b1-95e0-442027b2d8fb"
+      }
+    },
+    "elementVal": {
+      "name": "Taxonomy Element",
+      "type": "taxonomy",
+      "value": [
+        {
+          "name": "Red",
+          "codename": "red"
+        },
+        {
+          "name": "White",
+          "codename": "white"
+        },
+        {
+          "name": "Blue",
+          "codename": "blue"
+        }
+      ],
+      "taxonomyGroup": "product_filter"
+    },
+    "contentTypes": [],
+    "validExpected": false
+  }
+]
