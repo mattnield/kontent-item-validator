@@ -225,7 +225,7 @@ export function validateModularContentElement(elementDef, elementValue, knownCon
   let errors = [];
   const count = (elementValue.value || [])?.length;
 
-  if (elementDef.is_required && count === 0) errors.push(`${element.codename} is required`);
+  if (elementDef.is_required && count === 0) errors.push(`${elementDef.codename} is required`);
 
   if (count === 0) return errors;
 
