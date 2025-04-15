@@ -197,7 +197,7 @@ export function validateAssetElement(elementDef, elementValue) {
  */
 export function validateCustomElement(elementDef, elementValue) {
   let errors = [];
-  if (elementDef.is_required && (elementValue.value ?? '' === '')) {
+  if (elementDef.is_required && (elementValue.value ?? '') === '') {
     errors.push(`${elementDef.codename} is required`);
     return errors;
   }

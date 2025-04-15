@@ -2,8 +2,8 @@
   {
     "description": "required value is not supplied",
     "elementDef": {
-      "codename": "title",
-      "type": "text",
+      "codename": "my_custom_element",
+      "type": "custom",
       "is_required": true
     },
     "elementVal": {
@@ -14,8 +14,8 @@
   {
     "description": "required value is supplied",
     "elementDef": {
-      "codename": "title",
-      "type": "text",
+      "codename": "my_custom_element",
+      "type": "custom",
       "is_required": true
     },
     "elementVal": {
