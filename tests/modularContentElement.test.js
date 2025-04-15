@@ -4,7 +4,7 @@ import { validateModularContentElement } from '../src/validate.js';
 
 
 describe('validateModularContent (data-driven)', () => {
-  testCases.forEach(({ description, elementDef, elementVal, linkedItems, contentTypes, validExpected }) => {
+  testCases.forEach(({ description, elementDef, elementVal, contentTypes, validExpected }) => {
     it(description, () => {
       const errors = validateModularContentElement(elementDef, elementVal, contentTypes);
       const isValid = errors.length === 0;
