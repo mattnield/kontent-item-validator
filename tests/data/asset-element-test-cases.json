@@ -1,5 +1,21 @@
 [
   {
+    "description": "images are required",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "asset_count_limit": {
+        "condition": "exactly",
+        "value": 2
+      }
+    },
+    "elementVal": {
+      "value": []
+    },
+    "validExpected": false
+  },
+  {
     "description": "asset - valid image type",
     "elementDef": {
       "codename": "thumbnail",
@@ -21,7 +37,8 @@
     "elementDef": {
       "codename": "thumbnail",
       "type": "asset",
-      "required": true
+      "required": true,
+      "allowed_file_types": "adjustable"
     },
     "elementVal": {
       "value": [
@@ -34,42 +51,425 @@
     "validExpected": false
   },
   {
-    "description": "modular content - invalid item type",
+    "description": "asset - valid image type",
     "elementDef": {
-      "codename": "related_articles",
-      "type": "modular_content",
+      "codename": "thumbnail",
+      "type": "asset",
       "required": true,
-      "allowed_content_types": [
+      "allowed_file_types": "adjustable"
+    },
+    "elementVal": {
+      "value": [
         {
-          "id": "article-type-id"
+          "type": "image/png",
+          "name": "cover.png"
         }
       ]
     },
-    "elementVal": {
-      "value": {
-        "linkedItems": [
-          "item-id-2"
-        ]
+    "validExpected": true
+  },
+  {
+    "description": "image is too high",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "allowed_file_types": "adjustable",
+      "image_height_limit": {
+        "condition": "at-most",
+        "value": 1024
       }
     },
-    "linkedItems": [
-      {
-        "system": {
-          "id": "item-id-2",
-          "type": "video"
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/png",
+          "name": "cover.png",
+          "height": 1025
         }
-      }
-    ],
-    "contentTypes": [
-      {
-        "codename": "video",
-        "id": "video-type-id"
-      },
-      {
-        "codename": "article",
-        "id": "article-type-id"
-      }
-    ],
+      ]
+    },
     "validExpected": false
+  },
+  {
+    "description": "image is not high enough",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "allowed_file_types": "adjustable",
+      "image_height_limit": {
+        "condition": "at_least",
+        "value": 1024
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/png",
+          "name": "cover.png",
+          "height": 1023
+        }
+      ]
+    },
+    "validExpected": false
+  },
+  {
+    "description": "image not the right height",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "allowed_file_types": "adjustable",
+      "image_height_limit": {
+        "condition": "exactly",
+        "value": 1024
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/png",
+          "name": "cover.png",
+          "height": 1025
+        }
+      ]
+    },
+    "validExpected": false
+  },
+  {
+    "description": "image is high enough",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "image_height_limit": {
+        "condition": "at_least",
+        "value": 1024
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/png",
+          "name": "cover.png",
+          "height": 1025
+        }
+      ]
+    },
+    "validExpected": true
+  },
+  {
+    "description": "image is not too high",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "image_height_limit": {
+        "condition": "at_most",
+        "value": 1024
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/png",
+          "name": "cover.png",
+          "height": 1023
+        }
+      ]
+    },
+    "validExpected": true
+  },
+  {
+    "description": "image is the right height",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "image_height_limit": {
+        "condition": "exactly",
+        "value": 1024
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "height": 1024
+        }
+      ]
+    },
+    "validExpected": true
+  },
+  {
+    "description": "image is too wide",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "allowed_file_types": "adjustable",
+      "image_width_limit": {
+        "condition": "at-most",
+        "value": 768
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/png",
+          "name": "cover.png",
+          "width": 769
+        }
+      ]
+    },
+    "validExpected": false
+  },
+  {
+    "description": "image is not wide enough",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "allowed_file_types": "adjustable",
+      "image_width_limit": {
+        "condition": "at_least",
+        "value": 768
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/png",
+          "name": "cover.png",
+          "width": 767
+        }
+      ]
+    },
+    "validExpected": false
+  },
+  {
+    "description": "image not the right width",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "allowed_file_types": "adjustable",
+      "image_width_limit": {
+        "condition": "exactly",
+        "value": 768
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/png",
+          "name": "cover.png",
+          "width": 1025
+        }
+      ]
+    },
+    "validExpected": false
+  },
+  {
+    "description": "image is wide enough",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "image_width_limit": {
+        "condition": "at_least",
+        "value": 768
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/png",
+          "name": "cover.png",
+          "width": 768
+        }
+      ]
+    },
+    "validExpected": true
+  },
+  {
+    "description": "image is not too wide",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "image_width_limit": {
+        "condition": "at_most",
+        "value": 768
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "type": "image/png",
+          "name": "cover.png",
+          "width": 768
+        }
+      ]
+    },
+    "validExpected": true
+  },
+  {
+    "description": "image is the right width",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "image_width_limit": {
+        "condition": "exactly",
+        "value": 768
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "width": 768
+        }
+      ]
+    },
+    "validExpected": true
+  },
+  {
+    "description": "not enought images",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "asset_count_limit": {
+        "condition": "at_least",
+        "value": 2
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "width": 768
+        }
+      ]
+    },
+    "validExpected": false
+  },
+  {
+    "description": "too many images",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "asset_count_limit": {
+        "condition": "at_most",
+        "value": 1
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "width": 768
+        },
+        {
+          "width": 768
+        }
+      ]
+    },
+    "validExpected": false
+  },
+  {
+    "description": "not the right number of images",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "asset_count_limit": {
+        "condition": "exactly",
+        "value": 3
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "width": 768
+        },
+        {
+          "width": 768
+        }
+      ]
+    },
+    "validExpected": false
+  },
+  {
+    "description": "enought images",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "asset_count_limit": {
+        "condition": "at_least",
+        "value": 2
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "width": 768
+        },
+        {
+          "width": 768
+        },
+        {
+          "width": 768
+        }
+      ]
+    },
+    "validExpected": true
+  },
+  {
+    "description": "not too many images",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "asset_count_limit": {
+        "condition": "at_most",
+        "value": 3
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "width": 768
+        },
+        {
+          "width": 768
+        }
+      ]
+    },
+    "validExpected": true
+  },
+  {
+    "description": "the right number of images",
+    "elementDef": {
+      "codename": "thumbnail",
+      "type": "asset",
+      "required": true,
+      "asset_count_limit": {
+        "condition": "exactly",
+        "value": 2
+      }
+    },
+    "elementVal": {
+      "value": [
+        {
+          "width": 768
+        },
+        {
+          "width": 768
+        }
+      ]
+    },
+    "validExpected": true
   }
 ]
