@@ -267,7 +267,7 @@ export function validateMultipleChoiceElement(elementDef, elementValue) {
     return errors;
   }
 
-  if (elementDef.mode === 'single' && elementValue.value.length > 1) rrors.push(`${elementDef.codename} can only haveone value`);
+  if (elementDef.mode === 'single' && elementValue.value.length > 1) errors.push(`${elementDef.codename} can only haveone value`);
 
   for (const value of elementValue.value) {
     if (!elementDef.options.find(option => option.codename === value.codename)) errors.push(`The value ${value.codename} is not a valid option for ${elementDef.codename}`);

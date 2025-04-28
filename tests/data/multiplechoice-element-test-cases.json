@@ -1,0 +1,80 @@
+[
+  {
+    "description": "required value is missing",
+    "elementDef": {
+      "codename": "my_multiplechoice_element",
+      "type": "multiplechoice",
+      "is_required": true,
+      "options": [
+        {
+          "codename": "first_value",
+          "name": "First Value"
+        },
+        {
+          "codename": "second_value",
+          "name": "Second Value"
+        }
+      ]
+    },
+    "elementVal": {
+      "value": []
+    },
+    "validExpected": false
+  },
+  {
+    "description": "required value is present",
+    "elementDef": {
+      "codename": "my_multiplechoice_element",
+      "type": "multiplechoice",
+      "is_required": true,
+      "options": [
+        {
+          "codename": "first_value",
+          "name": "First Value"
+        },
+        {
+          "codename": "second_value",
+          "name": "Second Value"
+        }
+      ]
+    },
+    "elementVal": {
+      "value": [
+        {
+          "codename": "first_value"
+        }
+      ]
+    },
+    "validExpected": true
+  },
+  {
+    "description": "more than one value is selected",
+    "elementDef": {
+      "codename": "related_articles",
+      "type": "modular_content",
+      "is_required": true,
+      "mode": "single",
+      "options": [
+        {
+          "codename": "first_value",
+          "name": "First Value"
+        },
+        {
+          "codename": "second_value",
+          "name": "Second Value"
+        }
+      ]
+    },
+    "elementVal": {
+      "value": [
+        {
+          "codename": "first_value"
+        },
+        {
+          "codename": "second_value"
+        }
+      ]
+    },
+    "validExpected": false
+  }
+]
