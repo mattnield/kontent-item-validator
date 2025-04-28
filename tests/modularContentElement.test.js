@@ -3,7 +3,7 @@ import testCases from './data/modular-content-element-test-cases.json' assert { 
 import { validateModularContentElement } from '../src/validate.js';
 
 
-describe('validateModularContent (data-driven)', () => {
+describe('modularContent (data-driven)', () => {
   testCases.forEach(({ description, elementDef, elementVal, contentTypes, validExpected }) => {
     it(description, () => {
       const errors = validateModularContentElement(elementDef, elementVal, contentTypes);

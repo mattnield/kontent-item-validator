@@ -3,7 +3,7 @@ import { validateTextElement } from '../src/validate.js';
 import testCases from './data/text-element-test-cases.json' assert { type: 'json' };
 
 
-describe('validateTextElement (data-driven)', () => {
+describe('textElement (data-driven)', () => {
   testCases.forEach(({ description, elementDef, elementVal, validExpected }) => {
     it(description, () => {
       const errors = validateTextElement(elementDef, elementVal);
