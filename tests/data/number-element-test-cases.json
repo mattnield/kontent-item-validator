@@ -1,0 +1,26 @@
+[
+  {
+    "description": "required value is not supplied",
+    "elementDef": {
+      "codename": "my_number_element",
+      "type": "number",
+      "is_required": true
+    },
+    "elementVal": {
+      "value": ""
+    },
+    "validExpected": false
+  },
+  {
+    "description": "required value is supplied",
+    "elementDef": {
+      "codename": "my_number_element",
+      "type": "number",
+      "is_required": true
+    },
+    "elementVal": {
+      "value": "123"
+    },
+    "validExpected": true
+  }
+]
