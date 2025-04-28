@@ -209,7 +209,7 @@ export function validateCustomElement(elementDef, elementValue) {
  */
 export function validateDateElement(elementDef, elementValue) {
   let errors = [];
-  if (elementDef.is_required && elementValue.value === null) errors.push(`${elementDef.codename} is required`);
+  if (elementDef.is_required && (elementValue.value === null || elementValue.value === '')) errors.push(`${elementDef.codename} is required`);
   return errors;
 }
 

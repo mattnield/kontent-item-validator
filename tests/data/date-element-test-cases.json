@@ -1,0 +1,27 @@
+[
+  {
+    "description": "required value is not supplied",
+    "elementDef": {
+      "codename": "my_date_element",
+      "type": "date",
+      "is_required": true
+    },
+    "elementVal": {
+      "value": ""
+    },
+    "validExpected": false
+  },
+  {
+    "description": "required value is supplied",
+    "elementDef": {
+      "codename": "my_date_element",
+      "type": "custom",
+      "is_required": true
+    },
+    "elementVal": {
+      "value": "2025-04-09T23:00:00Z",
+      "display_timezone": "Europe/London"
+    },
+    "validExpected": true
+  }
+]
