@@ -16,7 +16,8 @@
   <script type="module">
     import { validateLanguageVariant, moveToWorkflowStep } from './src/validate.js';
 
-    const TARGET_WORKFLOW_STEP_ID = '00000000-0000-0000-0000-000000000000'; // Replace this
+    const TARGET_WORKFLOW_STEP_CODENAME = 'ready_for_coolness'; // Replace this
+    const TARGET_WORKFLOW_CODENAME = 'default';
 
     function initCustomElement() {
       try {
@@ -51,10 +52,12 @@
           moveButton.addEventListener('click', async () => {
             output.innerHTML = 'Moving item to translation step...';
             try {
+              console.log(_context)
               await moveToWorkflowStep(
                 _context.item.id,
-                _context.variant.language.id,
-                TARGET_WORKFLOW_STEP_ID
+                _context.variant.codename,
+                TARGET_WORKFLOW_STEP_CODENAME,
+                TARGET_WORKFLOW_CODENAME
               );
               output.innerHTML = `<p style="color:blue;">🎉 Item moved to translation step.</p>`;
               moveButton.style.display = 'none';

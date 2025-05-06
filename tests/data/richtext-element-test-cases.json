@@ -1,0 +1,589 @@
+[
+  {
+    "description": "required text is empty",
+    "elementDef": {
+      "codename": "richtext_element",
+      "type": "richtext",
+      "is_required": true
+    },
+    "elementVal": {
+      "value": "<p><br></p>"
+    },
+    "validExpected": false
+  },
+  {
+    "description": "required text is missing",
+    "elementDef": {
+      "codename": "richtext_element",
+      "type": "richtext",
+      "is_required": true
+    },
+    "elementVal": {
+      "value": "<p><br></p>"
+    },
+    "validExpected": false
+  },
+  {
+    "description": "required text is present",
+    "elementDef": {
+      "codename": "richtext_element",
+      "type": "richtext",
+      "is_required": true
+    },
+    "elementVal": {
+      "value": "<p>This is some <strong>rich</strong> text.</p>\n<p><br></p>"
+    },
+    "validExpected": true
+  },
+  {
+    "description": "images are not allowed",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [
+        "tables"
+      ]
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://preview-assets-eu-01.kc-usercontent.com:443/36a6ba89-afdc-013f-dda5-806bb0d472c1/f125b960-fd12-42fb-8656-124600d6d61f/retro-mic.jpg",
+          "width": 1920,
+          "height": 1280
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://preview-assets-eu-01.kc-usercontent.com:443/36a6ba89-afdc-013f-dda5-806bb0d472c1/7dc6ce7a-a8e9-4747-be3a-8b59c5a47873/-FWEBP_whxlsb.webp",
+          "width": 2050,
+          "height": 1366
+        }
+      }
+    },
+    "validExpected": false
+  },
+  {
+    "description": "images are allowed (all types)",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": []
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://preview-assets-eu-01.kc-usercontent.com:443/36a6ba89-afdc-013f-dda5-806bb0d472c1/f125b960-fd12-42fb-8656-124600d6d61f/retro-mic.jpg",
+          "width": 1920,
+          "height": 1280
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://preview-assets-eu-01.kc-usercontent.com:443/36a6ba89-afdc-013f-dda5-806bb0d472c1/7dc6ce7a-a8e9-4747-be3a-8b59c5a47873/-FWEBP_whxlsb.webp",
+          "width": 2050,
+          "height": 1366
+        }
+      }
+    },
+    "validExpected": true
+  },
+  {
+    "description": "images are too heigh",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_height_limit": {
+        "value": 767,
+        "condition": "at_most"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": false
+  },
+  {
+    "description": "images are not high enough",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_height_limit": {
+        "value": 769,
+        "condition": "at_least"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": false
+  },
+  {
+    "description": "images are not the right height",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_height_limit": {
+        "value": 769,
+        "condition": "exactly"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": false
+  },
+  {
+    "description": "images are not too heigh",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_height_limit": {
+        "value": 768,
+        "condition": "at_most"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": true
+  },
+  {
+    "description": "images are too high",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_height_limit": {
+        "value": 768,
+        "condition": "at_least"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": true
+  },
+  {
+    "description": "images are the right height",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_height_limit": {
+        "value": 768,
+        "condition": "exactly"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": true
+  },
+  {
+    "description": "images are too wide",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_width_limit": {
+        "value": 1023,
+        "condition": "at_most"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": false
+  },
+  {
+    "description": "images are not wide enough",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_width_limit": {
+        "value": 1025,
+        "condition": "at_least"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": false
+  },
+  {
+    "description": "images are not the right width",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_width_limit": {
+        "value": 1025,
+        "condition": "exactly"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": false
+  },
+  {
+    "description": "images are not too wide",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_width_limit": {
+        "value": 1024,
+        "condition": "at_most"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": true
+  },
+  {
+    "description": "images are wide enough",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_width_limit": {
+        "value": 1024,
+        "condition": "at_least"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": true
+  },
+  {
+    "description": "images are the right width",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "image_width_limit": {
+        "value": 1024,
+        "condition": "exactly"
+      }
+    },
+    "elementVal": {
+      "value": "<p><br></p>",
+      "images": {
+        "accfdb6d-98b9-485b-96ce-ef63bdad7c04": {
+          "image_id": "accfdb6d-98b9-485b-96ce-ef63bdad7c04",
+          "description": "English alt text",
+          "url": "https://example.com/retro-mic.jpg",
+          "width": 1024,
+          "height": 768
+        },
+        "eb4d3d47-552e-440b-88ea-259f96be9805": {
+          "image_id": "eb4d3d47-552e-440b-88ea-259f96be9805",
+          "description": null,
+          "url": "https://example.com/-FWEBP_whxlsb.webp",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    },
+    "validExpected": true
+  },
+  {
+    "description": "no unexpected modular content",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [
+        "tables"
+      ]
+    },
+    "elementVal": {
+      "value": "<p>Some modular content<br></p>"
+    },
+    "contentTypes": [
+      {
+        "codename": "type_codename",
+        "id": "type-id"
+      }
+    ],
+    "modularContent": {},
+    "validExpected": true
+  },
+  {
+    "description": "unexpected modular content",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [
+        "tables"
+      ],
+      "allowed_content_types": [
+        {
+          "id": "type-id"
+        }
+      ]
+    },
+    "elementVal": {
+      "value": "<p>Some modular content<br><object type=\"application/kenticocloud\" data-type=\"item\" data-rel=\"component\" data-codename=\"item_codename\"></object></p>"
+    },
+    "contentTypes": [
+      {
+        "codename": "type_codename",
+        "id": "type-id"
+      }
+    ],
+    "modularContent": {
+      "n2ff90670_3e5b_0136_141b_7f8f55e04856": {
+        "system": {
+          "id": "1111",
+          "name": "2ff90670-3e5b-0136-141b-7f8f55e04856",
+          "codename": "item_codename",
+          "language": "en",
+          "type": "type_codename"
+        }
+      }
+    },
+    "validExpected": false
+  },
+  {
+    "description": "expected modular content is correct type",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [],
+      "allowed_content_types": [
+        {
+          "id": "type-id"
+        }
+      ]
+    },
+    "elementVal": {
+      "value": "<p>Some modular content<br><object type=\"application/kenticocloud\" data-type=\"item\" data-rel=\"component\" data-codename=\"item_codename\"></object></p>"
+    },
+    "contentTypes": [
+      {
+        "codename": "type_codename",
+        "id": "type-id"
+      }
+    ],
+    "modularContent": {
+      "n2ff90670_3e5b_0136_141b_7f8f55e04856": {
+        "system": {
+          "id": "1111",
+          "name": "2ff90670-3e5b-0136-141b-7f8f55e04856",
+          "codename": "item_codename",
+          "language": "en",
+          "type": "type_codename"
+        }
+      }
+    },
+    "validExpected": true
+  },
+  {
+    "description": "expected modular content is wrong type",
+    "elementDef": {
+      "type": "richtext",
+      "allowed_blocks": [
+        "tables"
+      ],
+      "allowed_content_types": [
+        {
+          "id": "type-id"
+        }
+      ]
+    },
+    "elementVal": {
+      "value": "<p>Some modular content<br><object type=\"application/kenticocloud\" data-type=\"item\" data-rel=\"component\" data-codename=\"item_codename\"></object></p>"
+    },
+    "contentTypes": [
+      {
+        "codename": "type_codename",
+        "id": "wrong-type-id"
+      }
+    ],
+    "modularContent": {
+      "n2ff90670_3e5b_0136_141b_7f8f55e04856": {
+        "system": {
+          "id": "1111",
+          "name": "2ff90670-3e5b-0136-141b-7f8f55e04856",
+          "codename": "item_codename",
+          "language": "en",
+          "type": "type_codename"
+        }
+      }
+    },
+    "validExpected": false
+  }
+]

@@ -117,19 +117,12 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
 /**
  * Validates a number based on the configuration in Kontent.AI
  */
-export function validateAssetElement(elementDef, elementValue) {
+export function validateAssetElement(elementDef, elementValue, ignoreRequired = false) {
   let errors = [];
-  if (elementDef.is_required && elementValue.value.length === 0) {
+  if (!ignoreRequired && elementDef.is_required && elementValue.value.length === 0) {
     errors.push(`${elementDef.codename} is required`);
     return errors;
   }
-
-  const adjustableImageMimeTypes = new Set([
-    'image/webp',
-    'image/jpeg',
-    'image/png',
-    'image/gif'
-  ]);
 
   // Number limit
   if (elementDef.asset_count_limit) {
@@ -148,44 +141,56 @@ export function validateAssetElement(elementDef, elementValue) {
   }
   for (const asset of elementValue.value) {
     // Width limit
-    if (elementDef.image_width_limit) {
-      switch (elementDef.image_width_limit.condition) {
-        case 'at_least':
-          if (elementDef.image_width_limit.value > asset.width) errors.push(`${elementDef.codename} specifies an asset which is not wide enough`);
-          break;
-        case 'exactly':
-          if (elementDef.image_width_limit.value !== asset.width) errors.push(`${elementDef.codename} specifies an asset which is not the right width`);
-          break;
-        default:
-          if (elementDef.image_width_limit.value < asset.width) errors.push(`${elementDef.codename} specifies an asset which is too wide`);
-          break;
-      }
-    }
-    // Height limit
-    if (elementDef.image_height_limit) {
-      switch (elementDef.image_height_limit.condition) {
-        case 'at_least':
-          if (elementDef.image_height_limit.value > asset.height) errors.push(`${elementDef.codename} specifies an asset which is not high enough`);
-          break;
-        case 'exactly':
-          if (elementDef.image_height_limit.value !== asset.height) errors.push(`${elementDef.codename} specifies an asset which is not the right height`);
-          break;
-        default:
-          if (elementDef.image_height_limit.value < asset.height) errors.push(`${elementDef.codename} specifies an asset which is too high`);
-          break;
-      }
-    }
-    // Size limit
-    if (elementDef.maximum_file_size) {
-      if (asset.size > elementDef.maximum_file_size) errors.push(`${elementDef.codename} specifies an asset which is too large`);
-    }
-    // Type limit
-    if (elementDef.allowed_file_types === 'adjustable') {
-      // Adjustable images are: image/webp, image/jpeg, image/png, image/gif
-      if (!adjustableImageMimeTypes.has(asset.type)) errors.push(`${elementDef.codename} specifies an esset that is not an adjustable image`);
-    }
+    errors.push(...validateIndividualAsset(elementDef, asset));
   }
 
+  return errors;
+}
+
+function validateIndividualAsset(elementDef, asset) {
+  let errors = [];
+  const adjustableImageMimeTypes = new Set([
+    'image/webp',
+    'image/jpeg',
+    'image/png',
+    'image/gif'
+  ]);
+  if (elementDef.image_width_limit) {
+    switch (elementDef.image_width_limit.condition) {
+      case 'at_least':
+        if (elementDef.image_width_limit.value > asset.width) errors.push(`${elementDef.codename} specifies an asset which is not wide enough`);
+        break;
+      case 'exactly':
+        if (elementDef.image_width_limit.value !== asset.width) errors.push(`${elementDef.codename} specifies an asset which is not the right width`);
+        break;
+      default:
+        if (elementDef.image_width_limit.value < asset.width) errors.push(`${elementDef.codename} specifies an asset which is too wide`);
+        break;
+    }
+  }
+  // Height limit
+  if (elementDef.image_height_limit) {
+    switch (elementDef.image_height_limit.condition) {
+      case 'at_least':
+        if (elementDef.image_height_limit.value > asset.height) errors.push(`${elementDef.codename} specifies an asset which is not high enough`);
+        break;
+      case 'exactly':
+        if (elementDef.image_height_limit.value !== asset.height) errors.push(`${elementDef.codename} specifies an asset which is not the right height`);
+        break;
+      default:
+        if (elementDef.image_height_limit.value < asset.height) errors.push(`${elementDef.codename} specifies an asset which is too high`);
+        break;
+    }
+  }
+  // Size limit
+  if (elementDef.maximum_file_size) {
+    if (asset.size > elementDef.maximum_file_size) errors.push(`${elementDef.codename} specifies an asset which is too large`);
+  }
+  // Type limit
+  if (elementDef.allowed_file_types === 'adjustable') {
+    // Adjustable images are: image/webp, image/jpeg, image/png, image/gif
+    if (!adjustableImageMimeTypes.has(asset.type)) errors.push(`${elementDef.codename} specifies an esset that is not an adjustable image`);
+  }
   return errors;
 }
 
@@ -285,22 +290,147 @@ export function validateNumberElement(elementDef, elementValue) {
   return errors;
 }
 
+function richtextElementSupportsText(elementDef) { return (!elementDef.allowed_blocks || elementDef.allowed_blocks.length == 0 || elementDef.allowed_blocks.includes('text')); }
+function richtextElementSupportsTables(elementDef) { return (!elementDef.allowed_blocks || elementDef.allowed_blocks.length == 0 || elementDef.allowed_blocks.includes('tables')); }
+function richtextElementSupportsImages(elementDef) { return (!elementDef.allowed_blocks || elementDef.allowed_blocks.length == 0 || elementDef.allowed_blocks.includes('images')); }
+function richtextElementSupportsComponents(elementDef) { return (!elementDef.allowed_blocks || elementDef.allowed_blocks.length == 0 || elementDef.allowed_blocks.includes('components-and-items')); }
+
 /**
  * Validates RichText elements, checking for:
  * - empty values
  * 
- * @param {*} elementDef 
- * @param {*} elementValue 
+ * @param {*} elementDef Defenition of the type being processed
+ * @param {*} elementValue Value of the item being processed
+ * @param {*} contentTypes Any content types needed to validate the item
+ * @param {*} modularContent Any modular content associated with the item
  */
-export function validateRichTextElement(elementDef, elementValue) {
+export function validateRichTextElement(elementDef, elementValue, contentTypes, modularContent) {
   let errors = [];
-  if (elementDef.is_required && elementValue.value === '<p><br></p>') {
+  if (elementDef.is_required && (!elementValue.value || elementValue.value === '' || elementValue.value === '<p><br></p>')) {
     errors.push(`${elementDef.codename} is required`);
   }
 
+  if (richtextElementSupportsText(elementDef)) {
+    validateRichTextMarkup(elementDef, elementValue, errors);
+  }
+  validateRichTextImages(elementDef, elementValue, errors);
+  validateRichTextComponents(elementDef, contentTypes, modularContent, errors);
   // TODO: Check for inline component validity.
 
   return errors;
+}
+
+function validateRichTextMarkup(elementDef, elementValue, errors) {
+
+  if (!elementValue.value) return;
+  if (elementValue.value == '<p><br></p>') return;
+  if (elementDef.allowed_text_blocks?.length == 0) {
+    return;
+  }
+
+  const supportedTags = [
+    { name: 'paragraph', tag: 'p', type: 'text_block' },
+    { name: 'heading-one', tag: 'h1', type: 'text_block' },
+    { name: 'heading-two', tag: 'h2', type: 'text_block' },
+    { name: 'heading-three', tag: 'h3', type: 'text_block' },
+    { name: 'heading-four', tag: 'h4', type: 'text_block' },
+    { name: 'heading-five', tag: 'h5', type: 'text_block' },
+    { name: 'heading-six', tag: 'h6', type: 'text_block' },
+    { name: 'ordered-list', tag: 'ol', type: 'text_block' },
+    { name: 'unordered-list', tag: 'ul', type: 'text_block' },
+    { name: 'bold', tag: 'strong', type: 'formatting' },
+    { name: 'italic', tag: 'em', type: 'formatting' },
+    { name: 'superscript', tag: 'sup', type: 'formatting' },
+    { name: 'subscript', tag: 'sub', type: 'formatting' },
+    { name: 'code', tag: 'code', type: 'formatting' },
+    { name: 'link', tag: 'a', type: 'formatting' },
+    { name: 'unstyled', tag: 'p', type: 'formatting' },
+    { name: 'newline', tag: 'br', type: 'text_block' }
+  ];
+
+  // Get all the tags _not_ in a table.
+  const htmlWithoutTables = elementValue.value.replace(/<table\b[^>]*>[\s\S]*?<\/table>/gi, '');
+  const foundTags = htmlWithoutTables.matchAll(/<([a-zA-Z][^\s/>]*)(\s[^<>]*?)?\/?>/g);
+
+  for (const foundTag of foundTags) {
+    if (richtextElementSupportsComponents(elementDef) && foundTag[1] === 'object') {
+      // we need to check if it is a component
+      continue;
+    }
+
+    // if (richtextElementSupportsImages(elementDef) && ['figure', 'img'].includes(foundTag[1])) {
+    //   continue;
+    // }
+
+    if (richtextElementSupportsText(elementDef)) {
+      // is the tag generally supported?
+      const supportedTag = supportedTags.find(st => st.tag === foundTag[1]);
+      if (!supportedTag) {
+        errors.push(`Unsupported tag "${foundTag}" found`);
+        continue;
+      }
+
+      // check the allowed text block on the element
+      if (
+        elementDef.allowed_text_blocks
+        && elementDef.allowed_text_blocks.length > 0
+        && supportedTag.type === "text_block"
+        && !elementDef.allowed_text_blocks?.includes(supportedTag.name)
+      ) {
+        errors.push(`Block "${supportedTag.name}" is not allowed`);
+        continue;
+      }
+
+      // Check for supported formatting
+      if (elementDef.allowed_formatting && supportedTag.type === "formatting" && !elementDef.allowed_formatting?.includes(supportedTag.name)) {
+
+        errors.push(`Formatting "${supportedTag.name}" is not allowed`);
+        continue;
+      }
+    }
+  }
+}
+
+function validateRichTextComponents(elementDef, contentTypes, modularContent, errors) {
+  if (elementDef.allowed_blocks?.length > 0 && !elementDef.allowed_blocks?.includes('components_and_items')) {
+    if (Object.values(modularContent ?? {})?.length > 0) {
+      errors.push('components are not supported');
+      return;
+    }
+    return;
+  }
+  var components = Object.values(modularContent ?? {});
+  if (!components) return;
+
+  for (const component of components) {
+    const type = contentTypes.find(t => t.codename == component.system.type)
+    if (!type) {
+      errors.push(`unknown content type "${component.system.type}" in modular content`);
+      continue;
+    }
+
+    if (!elementDef.allowed_content_types.find(t => t.id === type.id)) {
+      errors.push(`content type ${component.system.type} is not allowed`);
+      continue;
+    }
+  }
+}
+
+function validateRichTextImages(elementDef, elementValue, errors) {
+  if (elementDef.allowed_blocks?.length > 0 && !elementDef.allowed_blocks?.includes('images')) {
+    if (Object.values(elementValue.images ?? {})?.length > 0) {
+      errors.push('images are not supported');
+      return;
+    }
+    return;
+  }
+
+  var images = Object.values(elementValue.images ?? {});
+  if (images) {
+    for (var image of Object.values(images)) {
+      errors.push(...validateIndividualAsset(elementDef, image));
+    }
+  }
 }
 
 /**
@@ -449,13 +579,18 @@ function findInvalidLinkedItemTypes(linkedItemCodenames, linkedItems, allowedTyp
   return invalid;
 }
 
-export async function moveToWorkflowStep(itemId, languageId, stepId) {
+export async function moveToWorkflowStep(itemId, languageCodename, stepCodename, workflowCodename) {
   const client = getManagementClient();
 
-  await client.changeWorkflowStepOfLanguageVariant()
+  await client.changeWorkflowOfLanguageVariant()
     .byItemId(itemId)
-    .byLanguageId(languageId)
-    .toStepId(stepId)
-    .withoutWorkflowReset()
-    .toPromise();
+    .byLanguageCodename(languageCodename)
+    .withData({
+      step_identifier: {
+        codename: stepCodename
+      },
+      workflow_identifier: {
+        codename: workflowCodename
+      }
+    }).toPromise();
 }
