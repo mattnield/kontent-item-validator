@@ -20,6 +20,8 @@ function getKeys(config) {
   workflowCodename = (config && config.worflowCodename) ? config.worflowCodename : import.meta.env.VITE_WORKFLOW_CODENAME;
   toStepCodename = (config && config.toStepCodename) ? config.toStepCodename : import.meta.env.VITE_TO_STEP_CODENAME;
   fromStepCodename = (config && config.fromStepCodename) ? config.fromStepCodename : import.meta.env.VITE_FROM_STEP_CODENAME;
+
+  console.log(`env:${environmentId}\ndapi:${dapiPreviewKey}\nmapi:${mapiKey}\nworkflow:${workflowCodename}\nto_step:${toStepCodename}\nfrom_step:${fromStepCodename}\n`);
 }
 
 /** Creates the management client */
