@@ -8,11 +8,18 @@ let contentTypes = null;
 let environmentId = '';
 let dapiPreviewKey = '';
 let mapiKey = '';
+let workflowCodename = '';
+let toStepCodename = '';
+let fromStepCodename = '';
+let currentStepCodename = ''
 
 function getKeys(config) {
   environmentId = (config && config.environmentId) ? config.environmentId : import.meta.env.VITE_KONTENT_ENVIRONMENT_ID;
   dapiPreviewKey = (config && config.dapiPreviewKey) ? config.dapiPreviewKey : import.meta.env.VITE_KONTENT_PREVIEW_API_KEY;
   mapiKey = (config && config.mapiKey) ? config.mapiKey : import.meta.env.VITE_KONTENT_MANAGEMENT_API_KEY;
+  workflowCodename = (config && config.worflowCodename) ? config.worflowCodename : import.meta.env.VITE_WORKFLOW_CODENAME;
+  toStepCodename = (config && config.toStepCodename) ? config.toStepCodename : import.meta.env.VITE_TO_STEP_CODENAME;
+  fromStepCodename = (config && config.fromStepCodename) ? config.fromStepCodename : import.meta.env.VITE_FROM_STEP_CODENAME;
 }
 
 /** Creates the management client */
@@ -48,14 +55,15 @@ async function getAllTypes() {
 }
 
 export async function validateLanguageVariant(itemCodename, languageCodename, configuration, deps = {}) {
-  console.clear();
   getKeys(configuration);
   mapiClient = deps.managementClient || getManagementClient();
   dapiClient = deps.deliveryClient || getDeliveryClient();
   contentTypes = await getAllTypes();
 
+
   const dapiResponse = await dapiClient
     .items(itemCodename)
+    .queryConfig({ waitForLoadingNewContent: true })
     .languageParameter(languageCodename)
     .equalsFilter('system.codename', itemCodename)
     .equalsFilter('system.language', languageCodename)
@@ -63,6 +71,16 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
     .toPromise();
 
   const item = dapiResponse.data?.items[0];
+  currentStepCodename = item.system.workflowStep;
+
+  if (currentStepCodename != fromStepCodename) {
+    return {
+      isReady: false,
+      isValid: false,
+      errors: []
+    };
+  }
+
   const contentType = contentTypes.find(type => type.codename === item.system.type);
 
   const errors = [];
@@ -109,6 +127,7 @@ export async function validateLanguageVariant(itemCodename, languageCodename, co
   });
 
   return {
+    isReady: true,
     isValid: errors.length === 0,
     errors,
   };
@@ -579,7 +598,7 @@ function findInvalidLinkedItemTypes(linkedItemCodenames, linkedItems, allowedTyp
   return invalid;
 }
 
-export async function moveToWorkflowStep(itemId, languageCodename, stepCodename, workflowCodename) {
+export async function moveToWorkflowStep(itemId, languageCodename) {
   const client = getManagementClient();
 
   await client.changeWorkflowOfLanguageVariant()
@@ -587,10 +606,14 @@ export async function moveToWorkflowStep(itemId, languageCodename, stepCodename,
     .byLanguageCodename(languageCodename)
     .withData({
       step_identifier: {
-        codename: stepCodename
+        codename: toStepCodename
       },
       workflow_identifier: {
         codename: workflowCodename
       }
     }).toPromise();
+
+  setTimeout(function () {
+    console.log(`Item ${itemId} updated to ${toStepCodename}`);
+  }, 1000);
 }

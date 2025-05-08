@@ -8,26 +8,22 @@
 </head>
 
 <body>
-  <h3>Translation Validation</h3>
-  <div id="validation-output">Checking...</div>
   <button id="move-btn" style="display:none;">✅ Send to Translation</button>
-  <button id="revalidate-btn" style="margin-top: 1rem;">🔁 Re-run Validation</button>
+  <button id="revalidate-btn" style="display:none; margin-top: 1rem;">🔁 Re-run Validation</button>
+  <div id="output"></div>
 
   <script type="module">
     import { validateLanguageVariant, moveToWorkflowStep } from './src/validate.js';
 
-    const TARGET_WORKFLOW_STEP_CODENAME = 'ready_for_coolness'; // Replace this
-    const TARGET_WORKFLOW_CODENAME = 'default';
-
     function initCustomElement() {
       try {
         CustomElement.init(async (element, _context) => {
-          const output = document.getElementById('validation-output');
+          const output = document.getElementById('output');
           const moveButton = document.getElementById('move-btn');
           const revalidateButton = document.getElementById('revalidate-btn');
 
           async function runValidation() {
-            output.innerHTML = '🔍 Validating...';
+            revalidateButton.style.display = 'none'
             moveButton.style.display = 'none';
 
             const result = await validateLanguageVariant(
@@ -37,10 +33,11 @@
             );
 
             if (result.isValid) {
-              output.innerHTML = `<p style="color:green;">✅ All validation passed.</p>`;
               moveButton.style.display = 'inline-block';
-            } else {
-              output.innerHTML = result.errors.map(err => `<p style="color:red;">❌ ${err}</p>`).join('');
+            }
+
+            if (result.isReady) {
+              revalidateButton.style.display = 'inline-block';
             }
           }
 
@@ -52,14 +49,11 @@
           moveButton.addEventListener('click', async () => {
             output.innerHTML = 'Moving item to translation step...';
             try {
-              console.log(_context)
               await moveToWorkflowStep(
                 _context.item.id,
-                _context.variant.codename,
-                TARGET_WORKFLOW_STEP_CODENAME,
-                TARGET_WORKFLOW_CODENAME
+                _context.variant.codename
               );
-              output.innerHTML = `<p style="color:blue;">🎉 Item moved to translation step.</p>`;
+              output.innerHTML = `<p style="color:blue;">Item moved to translation step.</p>`;
               moveButton.style.display = 'none';
             } catch (err) {
               output.innerHTML = `<p style="color:red;">❌ Failed: ${err.message}</p>`;
