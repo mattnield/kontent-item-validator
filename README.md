@@ -12,7 +12,6 @@ This prevents incomplete or invalid content from being sent to external translat
 - 🔗 Recursively validates modular content
 - 🧠 Supports rich text fields and embedded components
 - 🌍 Supports language-specific variants
-- 🚦 Shows validation results in the UI
 - 🚀 Allows editors to move valid content to the next workflow step
 - 🔐 Uses the Management API and Preview Delivery API securely
 
@@ -53,6 +52,9 @@ Then fill in your Kontent.AI credentials:
 VITE_KONTENT_ENVIRONMENT_ID=your-environment-id
 VITE_KONTENT_MANAGEMENT_API_KEY=your-management-api-key
 VITE_KONTENT_PREVIEW_API_KEY=your-preview-api-key
+VITE_WORKFLOW_CODENAME=active-workflow-codename
+VITE_TO_STEP_CODENAME=codename-of-previous-workflow-step
+VITE_FROM_STEP_CODENAME=codename-of-desired-workflow-step
 ```
 
 > **Note**: `.env` is excluded from version control via `.gitignore`.
@@ -76,29 +78,27 @@ Access the custom element at [https://localhost:5173/](https://localhost:5173/)
 1. Go to **Project settings → Custom elements**
 2. Add a new element pointing to your local or deployed URL
 3. Add the custom element to the desired content types
-4. It will validate the current item and expose a **“Send to Translation”** button if valid
+4. Configure the JSON for the custom elemetn as follows
+```json
+{
+    "worflowCodename": active-workflow-codename,
+    "toStepCodename": codename-of-desired-workflow-step,
+    "fromStepCodename": codename-of-previous-workflow-step,
+    "environmentId": your-environment-id,
+    "mapiKey": your-management-api-key,
+    "dapiPreviewKey": your-preview-api-key
+}
+```
 
 ---
 
 ## ✅ Validation Logic
 
-- Uses **Management API** to get content type rules:
-  - `required: true`
-  - `validation.limit`
-  - Allowed modular content types
 - Uses **Delivery API (Preview)** to resolve:
   - Linked items (modular content)
   - Embedded components in rich text
-- Recursively validates all nested items
+- Recursively validates nested items
 - Blocks transition to next workflow step unless validation passes
-
----
-
-## 🚀 Deployment
-
-This project is ready to deploy to [Netlify](https://netlify.com), Vercel, or any static hosting provider.
-
-> Don’t forget to configure environment variables on your host!
 
 ---
 
